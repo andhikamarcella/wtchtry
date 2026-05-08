@@ -4,6 +4,26 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="description" content="Viewer lokal untuk melihat TikTok watch history dan search history dari file TXT atau JSON." />
+    <script>
+      window.tailwind = window.tailwind || {};
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              tiktok: {
+                cyan: '#25F4EE',
+                pink: '#FE2C55',
+                ink: '#070711'
+              }
+            },
+            boxShadow: {
+              glow: '0 24px 90px rgba(0,0,0,.42)'
+            }
+          }
+        }
+      };
+    </script>
+    <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="/src/styles.css" />
     <title>TikTok History Viewer</title>
   </head>

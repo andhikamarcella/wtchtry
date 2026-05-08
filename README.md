@@ -6,11 +6,12 @@ Website statis untuk melihat **watch history** dan **search history** TikTok dar
 
 - Upload banyak file `.txt` atau `.json` sekaligus, atau paste data manual langsung dari clipboard.
 - Parsing format TikTok `Video Browsing History` dan `Search History`, plus fallback untuk struktur JSON/TXT yang mirip.
-- Dashboard ringkas dengan total, jumlah watch/search, dan tanggal terbaru.
+- Tampilan Tailwind CSS yang rapi dan responsive dengan dashboard total, jumlah watch/search, dan tanggal terbaru.
 - Filter tab Semua, Watch, dan Search.
 - Pencarian cepat berdasarkan keyword, URL, tanggal, atau nama file.
 - Sorting terbaru, terlama, kelompok tipe, atau judul A-Z.
 - Preview link di modal, tombol pop-up browser, dan fallback untuk membuka tab baru.
+- Styling memakai Tailwind Play CDN plus CSS kecil untuk background, scrollbar, dan polish global.
 - Export hasil filter ke CSV.
 - Semua pemrosesan dilakukan lokal di browser, data tidak dikirim ke server.
 

@@ -19,6 +19,18 @@ const state = {
 
 const app = document.getElementById('app');
 
+const ui = {
+  shell: 'mx-auto w-full max-w-[1240px] px-3 py-5 sm:px-4 lg:px-0 lg:py-10',
+  glass: 'border border-white/10 bg-slate-950/70 shadow-glow backdrop-blur-2xl',
+  primary: 'inline-flex min-h-11 items-center justify-center gap-2 rounded-full bg-gradient-to-r from-tiktok-cyan via-white to-tiktok-pink px-5 py-2.5 text-sm font-black text-slate-950 shadow-lg shadow-cyan-950/20 transition hover:-translate-y-0.5 hover:shadow-xl disabled:pointer-events-none disabled:opacity-45',
+  secondary: 'inline-flex min-h-11 items-center justify-center gap-2 rounded-full border border-white/10 bg-white/10 px-5 py-2.5 text-sm font-extrabold text-white transition hover:-translate-y-0.5 hover:border-white/25 hover:bg-white/15 disabled:pointer-events-none disabled:opacity-45',
+  ghost: 'inline-flex min-h-11 items-center justify-center gap-2 rounded-full border border-white/10 bg-transparent px-5 py-2.5 text-sm font-extrabold text-slate-200 transition hover:-translate-y-0.5 hover:bg-white/10 disabled:pointer-events-none disabled:opacity-45',
+  compact: 'min-h-9 px-4 py-2 text-xs sm:text-sm',
+  badge: 'inline-flex items-center gap-1.5 rounded-full border border-white/10 bg-white/10 px-3 py-1 text-xs font-black text-slate-200',
+  input: 'w-full rounded-[1.35rem] border border-white/10 bg-black/25 px-4 py-3 text-sm text-white outline-none transition placeholder:text-slate-500 focus:border-tiktok-cyan/70 focus:ring-4 focus:ring-tiktok-cyan/10',
+};
+
+
 const icons = {
   upload: icon('path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" x2="12" y1="3" y2="15"'),
   shield: icon('path d="M20 13c0 5-3.5 7.5-7.7 8.9a1 1 0 0 1-.6 0C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.2-2.6a1.3 1.3 0 0 1 1.6 0C14.5 3.8 17 5 19 5a1 1 0 0 1 1 1z"/><path d="m9 12 2 2 4-4"'),
@@ -318,20 +330,21 @@ function openPopup(item) {
 
 function renderHistoryCard(item) {
   const isWatch = item.type === 'watch';
-  return `<article class="history-card">
-    <div class="type-icon ${isWatch ? 'watch' : 'search'}">${isWatch ? icons.play : icons.search}</div>
-    <div class="history-card__body">
-      <div class="history-card__meta">
-        <span>${isWatch ? 'Watch history' : 'Search history'}</span>
+  const iconWrap = isWatch ? 'bg-tiktok-cyan/10 text-tiktok-cyan ring-tiktok-cyan/20' : 'bg-tiktok-pink/10 text-pink-200 ring-tiktok-pink/20';
+  return `<article class="group grid gap-4 rounded-[1.6rem] border border-white/10 bg-slate-950/70 p-4 shadow-lg shadow-black/20 backdrop-blur-xl transition hover:-translate-y-0.5 hover:border-white/20 hover:bg-slate-900/80 sm:grid-cols-[auto_1fr_auto] sm:items-center sm:p-5">
+    <div class="grid size-12 place-items-center rounded-2xl ring-1 ${iconWrap} sm:size-14">${isWatch ? icons.play : icons.search}</div>
+    <div class="min-w-0">
+      <div class="mb-2 flex flex-wrap items-center gap-2 text-xs font-black text-slate-400">
+        <span class="${ui.badge}">${isWatch ? 'Watch history' : 'Search history'}</span>
         <time>${escapeHtml(humanDate(item.date))}</time>
-        ${item.source ? `<span>${escapeHtml(item.source)}</span>` : ''}
+        ${item.source ? `<span class="max-w-full truncate rounded-full bg-white/5 px-2.5 py-1 text-slate-300">${escapeHtml(item.source)}</span>` : ''}
       </div>
-      <h3>${escapeHtml(item.title)}</h3>
-      <a href="${escapeHtml(item.url)}" target="_blank" rel="noreferrer">${icons.link} ${escapeHtml(shortUrl(item.url))}</a>
+      <h3 class="break-words text-base font-black leading-snug text-white sm:text-lg">${escapeHtml(item.title)}</h3>
+      <a class="mt-2 inline-flex max-w-full items-center gap-2 truncate text-sm font-bold text-tiktok-cyan hover:text-white" href="${escapeHtml(item.url)}" target="_blank" rel="noreferrer">${icons.link}<span class="truncate">${escapeHtml(shortUrl(item.url))}</span></a>
     </div>
-    <div class="history-card__actions">
-      <button class="secondary compact" data-preview="${escapeHtml(item.id)}">Preview</button>
-      <button class="primary compact" data-popup="${escapeHtml(item.id)}">Pop-up ${icons.external}</button>
+    <div class="flex flex-wrap gap-2 sm:justify-end">
+      <button class="${ui.secondary} ${ui.compact} flex-1 sm:flex-none" data-preview="${escapeHtml(item.id)}">Preview</button>
+      <button class="${ui.primary} ${ui.compact} flex-1 sm:flex-none" data-popup="${escapeHtml(item.id)}">Pop-up ${icons.external}</button>
     </div>
   </article>`;
 }
@@ -339,67 +352,70 @@ function renderHistoryCard(item) {
 function renderModal() {
   if (!state.preview) return '';
   const item = state.preview;
-  return `<div class="modal" role="dialog" aria-modal="true" aria-label="Preview link">
-    <div class="modal__panel">
-      <div class="modal__header">
-        <div><span>${item.type === 'watch' ? 'Preview video/link' : 'Preview pencarian'}</span><strong>${escapeHtml(item.title)}</strong></div>
-        <button class="icon-button" data-close-modal aria-label="Tutup">${icons.close}</button>
+  return `<div class="modal fixed inset-0 z-50 grid place-items-center bg-black/80 p-3 backdrop-blur-sm sm:p-5" role="dialog" aria-modal="true" aria-label="Preview link">
+    <div class="grid h-[94vh] w-full max-w-6xl grid-rows-[auto_1fr_auto] overflow-hidden rounded-[1.6rem] border border-white/10 bg-slate-950 shadow-glow sm:h-[88vh] sm:rounded-[2rem]">
+      <div class="flex items-center justify-between gap-3 border-b border-white/10 p-4">
+        <div class="min-w-0"><span class="text-xs font-black uppercase tracking-[.2em] text-slate-500">${item.type === 'watch' ? 'Preview video/link' : 'Preview pencarian'}</span><strong class="block truncate text-base font-black text-white">${escapeHtml(item.title)}</strong></div>
+        <button class="grid size-11 place-items-center rounded-full bg-white/10 text-white transition hover:bg-white/20" data-close-modal aria-label="Tutup">${icons.close}</button>
       </div>
-      <iframe title="Preview ${escapeHtml(item.title)}" src="${escapeHtml(item.url)}" sandbox="allow-scripts allow-same-origin allow-popups allow-forms"></iframe>
-      <div class="modal__footer">
+      <iframe class="h-full w-full border-0 bg-white" title="Preview ${escapeHtml(item.title)}" src="${escapeHtml(item.url)}" sandbox="allow-scripts allow-same-origin allow-popups allow-forms"></iframe>
+      <div class="flex flex-col gap-3 border-t border-white/10 p-4 text-sm text-slate-400 sm:flex-row sm:items-center sm:justify-between">
         <p>TikTok kadang memblokir iframe. Kalau kosong, klik “Pop-up / tab baru”.</p>
-        <button class="primary compact" data-popup="${escapeHtml(item.id)}">Pop-up ${icons.external}</button>
-        <a class="secondary compact" href="${escapeHtml(item.url)}" target="_blank" rel="noreferrer">Buka tab baru</a>
+        <div class="flex flex-wrap gap-2"><button class="${ui.primary} ${ui.compact}" data-popup="${escapeHtml(item.id)}">Pop-up ${icons.external}</button><a class="${ui.secondary} ${ui.compact}" href="${escapeHtml(item.url)}" target="_blank" rel="noreferrer">Buka tab baru</a></div>
       </div>
     </div>
   </div>`;
 }
 
 function renderUploadPanel() {
-  return `<section class="upload-grid">
-    <div class="dropzone ${state.dragging ? 'is-dragging' : ''}" data-dropzone>
+  const dropState = state.dragging ? 'scale-[.99] border-tiktok-cyan bg-tiktok-cyan/10 ring-4 ring-tiktok-cyan/10' : 'border-white/10 bg-slate-950/70 hover:border-tiktok-cyan/50 hover:bg-slate-900/80';
+  return `<section class="grid gap-4 lg:grid-cols-[0.95fr_1.05fr]">
+    <div class="dropzone ${dropState} group grid min-h-[19rem] cursor-pointer place-items-center rounded-[2rem] border border-dashed p-6 text-center shadow-glow backdrop-blur-2xl transition" data-dropzone>
       <input id="file-input" type="file" accept=".json,.txt,application/json,text/plain" multiple hidden />
-      <div class="dropzone__icon">${icons.upload}</div>
-      <h2>Upload file TikTok</h2>
-      <p>Tarik file ke sini atau klik untuk pilih file JSON/TXT dari export TikTok.</p>
-      <div class="filetypes"><span>${icons.json} JSON</span><span>${icons.text} TXT</span></div>
-      ${state.fileName ? `<p class="filename">Sumber: ${escapeHtml(state.fileName)}</p>` : ''}
+      <div class="grid size-20 place-items-center rounded-[1.5rem] bg-tiktok-cyan/10 text-4xl text-tiktok-cyan ring-1 ring-tiktok-cyan/20 transition group-hover:scale-105">${icons.upload}</div>
+      <div><h2 class="mt-5 text-2xl font-black text-white">Upload file TikTok</h2><p class="mx-auto mt-2 max-w-md text-sm leading-6 text-slate-400">Tarik file ke sini atau klik untuk pilih file JSON/TXT dari export TikTok.</p></div>
+      <div class="mt-4 flex flex-wrap justify-center gap-2"><span class="${ui.badge}">${icons.json} JSON</span><span class="${ui.badge}">${icons.text} TXT</span></div>
+      ${state.fileName ? `<p class="mt-4 max-w-full break-words rounded-full bg-white/10 px-4 py-2 text-xs font-bold text-slate-200">Sumber: ${escapeHtml(state.fileName)}</p>` : ''}
     </div>
 
-    <div class="paste-card">
-      <div class="section-title"><span>${icons.clipboard}</span><div><h2>Paste manual</h2><p>Kalau datanya sudah kamu copy, tempel di sini lalu klik parse.</p></div></div>
-      <textarea id="paste-input" placeholder="Contoh:\nDate: 2026-05-08 09:10:00\nLink: https://www.tiktok.com/@...\n\nSearch Term: resep ayam" rows="8">${escapeHtml(state.pasteText)}</textarea>
-      <div class="paste-actions">
-        <button class="primary compact" data-parse-paste>Parse teks</button>
-        <button class="secondary compact" data-sample>Isi contoh</button>
-        <button class="ghost compact" data-clear ${state.items.length ? '' : 'disabled'}>${icons.trash} Reset</button>
+    <div class="rounded-[2rem] border border-white/10 bg-slate-950/70 p-5 shadow-glow backdrop-blur-2xl sm:p-6">
+      <div class="flex gap-3">
+        <span class="grid size-12 place-items-center rounded-2xl bg-tiktok-pink/10 text-2xl text-pink-200 ring-1 ring-tiktok-pink/20">${icons.clipboard}</span>
+        <div><h2 class="text-2xl font-black text-white">Paste manual</h2><p class="mt-1 text-sm leading-6 text-slate-400">Kalau datanya sudah kamu copy, tempel di sini lalu klik parse.</p></div>
+      </div>
+      <textarea class="${ui.input} mt-5 min-h-[12rem] resize-y font-mono leading-6" id="paste-input" placeholder="Contoh:\nDate: 2026-05-08 09:10:00\nLink: https://www.tiktok.com/@...\n\nSearch Term: resep ayam" rows="8">${escapeHtml(state.pasteText)}</textarea>
+      <div class="mt-4 flex flex-wrap gap-2">
+        <button class="${ui.primary} ${ui.compact} flex-1 sm:flex-none" data-parse-paste>Parse teks</button>
+        <button class="${ui.secondary} ${ui.compact} flex-1 sm:flex-none" data-sample>Isi contoh</button>
+        <button class="${ui.ghost} ${ui.compact} flex-1 sm:flex-none" data-clear ${state.items.length ? '' : 'disabled'}>${icons.trash} Reset</button>
       </div>
     </div>
   </section>`;
 }
 
 function renderToolbar(stats, visibleItems) {
-  return `<section class="toolbar">
-    <div class="tabs" role="tablist" aria-label="Filter history">
-      ${[['all', 'Semua', stats.all], ['watch', 'Watch', stats.watch], ['search', 'Search', stats.search]].map(([key, label, count]) => `<button class="${state.activeTab === key ? 'active' : ''}" data-tab="${key}">${label}<span>${count}</span></button>`).join('')}
+  const tabs = [['all', 'Semua', stats.all], ['watch', 'Watch', stats.watch], ['search', 'Search', stats.search]];
+  return `<section class="sticky top-3 z-30 mt-4 grid gap-3 rounded-[1.5rem] border border-white/10 bg-slate-950/80 p-3 shadow-glow backdrop-blur-2xl lg:grid-cols-[auto_1fr_auto_auto] lg:items-center">
+    <div class="flex flex-wrap gap-2" role="tablist" aria-label="Filter history">
+      ${tabs.map(([key, label, count]) => `<button class="inline-flex min-h-10 items-center gap-2 rounded-full px-4 py-2 text-sm font-black transition ${state.activeTab === key ? 'bg-white text-slate-950' : 'bg-white/10 text-slate-200 hover:bg-white/15'}" data-tab="${key}">${label}<span class="rounded-full bg-black/15 px-2 py-0.5 text-xs">${count}</span></button>`).join('')}
     </div>
-    <label class="searchbox">${icons.search}<input id="query-input" value="${escapeHtml(state.query)}" placeholder="Cari keyword, URL, tanggal, atau nama file..." /></label>
-    <select id="sort-select" aria-label="Urutkan data">
+    <label class="flex min-h-11 items-center gap-3 rounded-full border border-white/10 bg-white/10 px-4 text-slate-300 transition focus-within:border-tiktok-cyan/70 focus-within:ring-4 focus-within:ring-tiktok-cyan/10">${icons.search}<input class="w-full bg-transparent text-sm font-semibold text-white outline-none placeholder:text-slate-500" id="query-input" value="${escapeHtml(state.query)}" placeholder="Cari keyword, URL, tanggal, atau nama file..." /></label>
+    <select class="min-h-11 rounded-full border border-white/10 bg-slate-900 px-4 text-sm font-extrabold text-white outline-none focus:border-tiktok-cyan/70 focus:ring-4 focus:ring-tiktok-cyan/10" id="sort-select" aria-label="Urutkan data">
       <option value="newest" ${state.sort === 'newest' ? 'selected' : ''}>Terbaru dulu</option>
       <option value="oldest" ${state.sort === 'oldest' ? 'selected' : ''}>Terlama dulu</option>
       <option value="type" ${state.sort === 'type' ? 'selected' : ''}>Kelompokkan tipe</option>
       <option value="title" ${state.sort === 'title' ? 'selected' : ''}>Judul A-Z</option>
     </select>
-    <button class="secondary compact" data-download ${visibleItems.length ? '' : 'disabled'}>${icons.download} CSV</button>
+    <button class="${ui.secondary} ${ui.compact}" data-download ${visibleItems.length ? '' : 'disabled'}>${icons.download} CSV</button>
   </section>`;
 }
 
 function renderResults(visibleItems) {
   if (!state.items.length) {
-    return `<div class="empty">${icons.history}<h3>Belum ada data</h3><p>Upload file export TikTok atau paste teks untuk mulai melihat daftar history.</p></div>`;
+    return `<div class="rounded-[2rem] border border-white/10 bg-slate-950/70 px-5 py-16 text-center shadow-glow backdrop-blur-2xl">${icons.history}<h3 class="mt-4 text-2xl font-black text-white">Belum ada data</h3><p class="mx-auto mt-2 max-w-lg text-sm leading-6 text-slate-400">Upload file export TikTok atau paste teks untuk mulai melihat daftar history.</p></div>`;
   }
   if (!visibleItems.length) {
-    return `<div class="empty">${icons.search}<h3>Tidak ada hasil</h3><p>Coba ubah kata kunci pencarian, tab filter, atau urutan data.</p></div>`;
+    return `<div class="rounded-[2rem] border border-white/10 bg-slate-950/70 px-5 py-16 text-center shadow-glow backdrop-blur-2xl">${icons.search}<h3 class="mt-4 text-2xl font-black text-white">Tidak ada hasil</h3><p class="mx-auto mt-2 max-w-lg text-sm leading-6 text-slate-400">Coba ubah kata kunci pencarian, tab filter, atau urutan data.</p></div>`;
   }
   return visibleItems.map(renderHistoryCard).join('');
 }
@@ -407,34 +423,35 @@ function renderResults(visibleItems) {
 function render(options = {}) {
   const stats = getStats();
   const visibleItems = getVisibleItems();
-  app.innerHTML = `<main>
-    <section class="hero">
-      <div class="hero__content">
-        <span class="eyebrow">${icons.shield} 100% lokal di browser</span>
-        <h1>Lihat history TikTok tanpa ribet.</h1>
-        <p>Upload atau paste data TXT/JSON dari TikTok. Semua parsing berjalan di browser kamu, tampil rapi, bisa dicari, dan siap deploy ke Vercel atau Railway.</p>
-        <div class="hero__actions">
-          <button class="primary" data-upload>${icons.upload} Upload file</button>
-          <button class="secondary" data-sample>Lihat contoh</button>
-          <a class="secondary" href="https://support.tiktok.com/id/account-and-privacy/personalized-ads-and-data/requesting-your-data" target="_blank" rel="noreferrer">Cara request data ${icons.external}</a>
+  app.innerHTML = `<main class="${ui.shell}">
+    <section class="grid gap-4 lg:grid-cols-[1fr_360px]">
+      <div class="relative overflow-hidden rounded-[2.25rem] border border-white/10 bg-slate-950/70 p-6 shadow-glow backdrop-blur-2xl sm:p-10 lg:p-14">
+        <div class="pointer-events-none absolute -bottom-24 -right-20 size-72 rounded-full bg-gradient-to-br from-tiktok-cyan via-white to-tiktok-pink opacity-20 blur-2xl"></div>
+        <span class="inline-flex items-center gap-2 rounded-full border border-tiktok-cyan/30 bg-tiktok-cyan/10 px-3 py-1.5 text-xs font-black text-cyan-100">${icons.shield} 100% lokal di browser</span>
+        <h1 class="mt-6 max-w-4xl text-5xl font-black leading-[.92] tracking-[-0.07em] text-white sm:text-6xl lg:text-7xl">Lihat history TikTok tanpa ribet.</h1>
+        <p class="mt-5 max-w-2xl text-base leading-7 text-slate-300 sm:text-lg">Upload atau paste data TXT/JSON dari TikTok. Semua parsing berjalan di browser kamu, tampil rapi, bisa dicari, dan siap deploy ke Vercel atau Railway.</p>
+        <div class="mt-8 flex flex-wrap gap-3">
+          <button class="${ui.primary}" data-upload>${icons.upload} Upload file</button>
+          <button class="${ui.secondary}" data-sample>Lihat contoh</button>
+          <a class="${ui.secondary}" href="https://support.tiktok.com/id/account-and-privacy/personalized-ads-and-data/requesting-your-data" target="_blank" rel="noreferrer">Cara request data ${icons.external}</a>
         </div>
       </div>
-      <div class="hero__side">
-        <div class="stat-card"><span>Total</span><strong>${stats.all.toLocaleString('id-ID')}</strong><small>item terbaca</small></div>
-        <div class="mini-stats"><div><b>${stats.watch}</b><span>Watch</span></div><div><b>${stats.search}</b><span>Search</span></div></div>
-        <p>Terakhir: ${escapeHtml(stats.latest)}</p>
+      <div class="grid gap-3 rounded-[2rem] border border-white/10 bg-gradient-to-br from-tiktok-cyan/15 to-tiktok-pink/10 p-5 shadow-glow backdrop-blur-2xl">
+        <div class="rounded-[1.5rem] bg-black/20 p-5"><span class="text-sm font-black text-slate-400">Total</span><strong class="mt-2 block text-6xl font-black leading-none tracking-[-0.08em] text-white">${stats.all.toLocaleString('id-ID')}</strong><small class="font-bold text-slate-400">item terbaca</small></div>
+        <div class="grid grid-cols-2 gap-3"><div class="rounded-2xl bg-white/10 p-4"><b class="block text-3xl font-black text-white">${stats.watch}</b><span class="text-sm font-bold text-slate-400">Watch</span></div><div class="rounded-2xl bg-white/10 p-4"><b class="block text-3xl font-black text-white">${stats.search}</b><span class="text-sm font-bold text-slate-400">Search</span></div></div>
+        <p class="rounded-2xl bg-white/5 p-4 text-sm font-bold text-slate-300">Terakhir: ${escapeHtml(stats.latest)}</p>
       </div>
     </section>
 
-    ${renderUploadPanel()}
-    ${(state.error || state.notice) ? `<section class="message ${state.error ? 'is-error' : 'is-success'}">${state.error ? icons.alert : icons.shield}<span>${escapeHtml(state.error || state.notice)}</span></section>` : ''}
+    <div class="mt-4">${renderUploadPanel()}</div>
+    ${(state.error || state.notice) ? `<section class="mt-4 flex items-center gap-3 rounded-2xl border p-4 text-sm font-bold ${state.error ? 'border-tiktok-pink/30 bg-tiktok-pink/10 text-pink-100' : 'border-tiktok-cyan/30 bg-tiktok-cyan/10 text-cyan-100'}">${state.error ? icons.alert : icons.shield}<span>${escapeHtml(state.error || state.notice)}</span></section>` : ''}
     ${renderToolbar(stats, visibleItems)}
 
-    <section class="results-head">
-      <div><h2>Daftar history</h2><p>Menampilkan ${visibleItems.length.toLocaleString('id-ID')} dari ${state.items.length.toLocaleString('id-ID')} item</p></div>
-      ${state.items.length ? `<button class="ghost compact" data-clear>${icons.trash} Bersihkan</button>` : ''}
+    <section class="mt-4 flex flex-col gap-3 rounded-[1.5rem] border border-white/10 bg-slate-950/60 p-4 shadow-lg backdrop-blur-xl sm:flex-row sm:items-center sm:justify-between">
+      <div><h2 class="text-2xl font-black text-white">Daftar history</h2><p class="mt-1 text-sm text-slate-400">Menampilkan ${visibleItems.length.toLocaleString('id-ID')} dari ${state.items.length.toLocaleString('id-ID')} item</p></div>
+      ${state.items.length ? `<button class="${ui.ghost} ${ui.compact}" data-clear>${icons.trash} Bersihkan</button>` : ''}
     </section>
-    <section class="results" aria-live="polite">${renderResults(visibleItems)}</section>
+    <section class="mt-3 grid gap-3" aria-live="polite">${renderResults(visibleItems)}</section>
     ${renderModal()}
   </main>`;
 
