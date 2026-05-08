@@ -266,7 +266,7 @@ function render(options = {}) {
       <div class="hero__content">
         <span class="eyebrow">${icons.shield} 100% lokal di browser</span>
         <h1>Lihat Watch History & Search History TikTok dengan rapi.</h1>
-        <p>Upload file TXT atau JSON dari data export TikTok. Data tidak dikirim ke server, siap dipakai sebagai static web dan deploy ke Vercel.</p>
+        <p>Upload file TXT atau JSON dari data export TikTok. Data tidak dikirim ke server, siap dipakai sebagai static web dan deploy ke Vercel atau Railway.</p>
         <div class="hero__actions">
           <button class="primary" data-upload>${icons.upload} Upload file</button>
           <a class="secondary" href="https://support.tiktok.com/id/account-and-privacy/personalized-ads-and-data/requesting-your-data" target="_blank" rel="noreferrer">Cara request data ${icons.external}</a>

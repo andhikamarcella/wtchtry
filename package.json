@@ -5,6 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "python3 -m http.server 5173",
-    "build": "rm -rf dist && mkdir -p dist && cp index.html dist/index.html && cp -R src dist/src"
+    "build": "rm -rf dist && mkdir -p dist && cp index.html dist/index.html && cp -R src dist/src",
+    "start": "node scripts/serve-static.mjs"
   }
 }
